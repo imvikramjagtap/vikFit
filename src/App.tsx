@@ -10,8 +10,9 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider>
-          <div className='m-3'>
+          <div className='m-3 flex flex-col items-center'>
             <EnhancedDietTracker />
+            <div className='flex w-4xl items-center justify-center my-2 py-1'>©️Vikram Jagtap 2024</div>
           </div>
           <Toaster />
         </ThemeProvider>
