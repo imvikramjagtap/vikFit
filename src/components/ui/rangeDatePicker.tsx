@@ -12,11 +12,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePickerWithRange({
-  className, setDate, date
-}: React.HTMLAttributes<HTMLDivElement>) {
+export function DatePickerWithRange({ setDate, date }) {
   return (
-    <div className={cn("flex w-full", className)}>
+    <div className={cn("flex w-full")}>
       <Popover>
         <PopoverTrigger asChild>
           <Button

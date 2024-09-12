@@ -1,5 +1,4 @@
-import * as React from "react"
-import { addDays, format } from "date-fns"
+import { format } from "date-fns"
 import { Calendar as CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -10,12 +9,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useState } from "react"
 
-export function DatePickerWithPresets({date, setDate}) {
+export function DatePickerWithPresets({date, setDate} : {date: Date, setDate: typeof useState}) {
 //   const [date, setDate] = React.useState<Date>()
 
   return (
-    <Popover className="w-full">
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}

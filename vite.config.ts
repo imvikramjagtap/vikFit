@@ -9,4 +9,12 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    outDir: 'dist',  // Make sure this matches your desired output directory
+    rollupOptions: {
+      input: {
+        main: './src/main.tsx',  // Adjust according to your entry point
+      },
+    },
+  },
 })

@@ -24,7 +24,7 @@ export default function EnhancedDietTracker() {
   const [newMeal, setNewMeal] = useState<MealOption>({ name: '', calories: 0, protein: 0 })
   const [currentMealTime, setCurrentMealTime] = useState<MealTime>('Morning')
   const [graphData, setGraphData] = useState<{ date: string; calories: number; protein: number; weight: number }[]>([])
-  const [graphPeriod, setGraphPeriod] = useState<'day' | 'week' | 'month'>('day')
+  const [graphPeriod, setGraphPeriod] = useState<'day' | 'week' | 'month' | null>('day')
   const [graphType, setGraphType] = useState<'line' | 'bar'>('line')
   const [currentWeight, setCurrentWeight] = useState<string>('')
   const [isCustomMealOpen, setIsCustomMealOpen] = useState(false)
@@ -68,7 +68,7 @@ export default function EnhancedDietTracker() {
   }
 
   const calculateTotals = (date: string) => {
-    const meals = selectedMeals[date] || {}
+    const meals: typeof mealOptions = selectedMeals[date] || {}
     return Object.values(meals).reduce(
       (acc, meal) => ({
         calories: acc.calories + meal.calories,
@@ -78,10 +78,9 @@ export default function EnhancedDietTracker() {
     )
   }
 
-  const updateGraphData = (daterange: { from: string; to: string } | null) => {
+  const updateGraphData = (daterange: object | null) => {
     let endDate = daterange?.to || new Date(currentDay);
     let startDate = daterange?.from || new Date(endDate);
-    console.log(startDate, endDate, "start end");
 
     if (!dateRange) {
       console.log("called");
@@ -225,7 +224,7 @@ export default function EnhancedDietTracker() {
               <SelectTrigger id="meal">
                 <SelectValue placeholder="Select a meal" />
               </SelectTrigger>
-              <SelectContent className='max-w-xs'>
+              <SelectContent className='max-w-xs sm:max-w-fit'>
                 {mealOptions[currentMealTime]?.map((option, index) => (
                   <SelectItem key={index} value={JSON.stringify(option)}>
                     {option.name} (Calories: {option.calories}, Protein: {option.protein}g)
