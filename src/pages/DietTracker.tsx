@@ -13,13 +13,15 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../componen
 import { useTheme } from '../components/ThemeProvider'
 import { RootState } from '../store/store'
 import { addCustomMeal, selectMeal, addCustomSelectedMeal, deleteMeal, addWeight, MealOption, MealTime } from '../store/dietSlice'
+import { DatePickerWithPresets } from '../components/ui/datePicker'
+import { format } from "date-fns"
 
 export default function EnhancedDietTracker() {
   const dispatch = useDispatch()
   const { mealOptions, selectedMeals, weightData } = useSelector((state: RootState) => state.diet)
   const [currentDay, setCurrentDay] = useState<string>(new Date().toISOString().split('T')[0])
   const [newMeal, setNewMeal] = useState<MealOption>({ name: '', calories: 0, protein: 0 })
-  const [currentMealTime, setCurrentMealTime] = useState<MealTime>('morning')
+  const [currentMealTime, setCurrentMealTime] = useState<MealTime>('Morning')
   const [graphData, setGraphData] = useState<{ date: string; calories: number; protein: number; weight: number }[]>([])
   const [graphPeriod, setGraphPeriod] = useState<'day' | 'week' | 'month'>('day')
   const [graphType, setGraphType] = useState<'line' | 'bar'>('line')
@@ -156,7 +158,7 @@ export default function EnhancedDietTracker() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-2xl font-bold">Enhanced Diet Tracker</CardTitle>
+        <CardTitle className="text-2xl font-bold">Diet Tracker</CardTitle>
         <Button
           variant="outline"
           size="icon"
@@ -169,15 +171,9 @@ export default function EnhancedDietTracker() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div>
+          <div className='flex flex-col gap-1 items-start w-full'>
             <Label htmlFor="date" className="text-lg font-semibold">Date</Label>
-            <Input
-              type="date"
-              id="date"
-              value={currentDay}
-              onChange={(e) => setCurrentDay(e.target.value)}
-              className="mt-1 w-full"
-            />
+            <DatePickerWithPresets date={currentDay} setDate={setCurrentDay} />
           </div>
           <div>
             <Label htmlFor="weight" className="text-lg font-semibold">Weight (kg)</Label>
@@ -188,7 +184,7 @@ export default function EnhancedDietTracker() {
                 value={currentWeight}
                 onChange={(e) => setCurrentWeight(e.target.value)}
                 placeholder="Enter weight"
-                className="mr-2"
+                className="mr-2 w-full md:1/2"
               />
               <Button onClick={handleWeightSubmit}>Add Weight</Button>
             </div>
@@ -200,7 +196,7 @@ export default function EnhancedDietTracker() {
                 <SelectValue placeholder="Select meal time" />
               </SelectTrigger>
               <SelectContent>
-                {Object.keys(mealOptions).map((mealTime) => (
+                {Object.keys(mealOptions)?.map((mealTime) => (
                   <SelectItem key={mealTime} value={mealTime}>
                     {mealTime.replace(/([A-Z])/g, ' $1').trim()}
                   </SelectItem>
@@ -217,8 +213,8 @@ export default function EnhancedDietTracker() {
               <SelectTrigger id="meal">
                 <SelectValue placeholder="Select a meal" />
               </SelectTrigger>
-              <SelectContent>
-                {mealOptions[currentMealTime].map((option, index) => (
+              <SelectContent className='max-w-xs'>
+                {mealOptions[currentMealTime]?.map((option, index) => (
                   <SelectItem key={index} value={JSON.stringify(option)}>
                     {option.name} (Calories: {option.calories}, Protein: {option.protein}g)
                   </SelectItem>
@@ -272,9 +268,9 @@ export default function EnhancedDietTracker() {
                   id="addToSelectedMeals"
                   checked={isAddToSelectedMeals}
                   onChange={(e) => setIsAddToSelectedMeals(e.target.checked)}
-                  className="form-checkbox h-5 w-5 text-primary"
+                  className="form-checkbox h-4 w-4 my-2 text-primary"
                 />
-                <Label htmlFor="addToSelectedMeals">Add to selected meals only</Label>
+                <Label htmlFor="addToSelectedMeals">Add to Todays Meal only</Label>
               </div>
               <Button onClick={handleAddCustomMeal} className="w-full">
                 <PlusCircle className="w-4 h-4 mr-2" />
@@ -288,7 +284,7 @@ export default function EnhancedDietTracker() {
             <Button onClick={() => changeDay(-1)} variant="outline" size="icon">
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <h3 className="text-xl font-semibold">Selected Meals for {currentDay}</h3>
+            <h3 className="text-xl font-semibold">Meals for {format(currentDay, "PPP")}</h3>
             <Button onClick={() => changeDay(1)} variant="outline" size="icon">
               <ChevronRight className="h-4 w-4" />
             </Button>
