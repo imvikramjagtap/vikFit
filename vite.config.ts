@@ -10,10 +10,10 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'dist',  // Make sure this matches your desired output directory
+    outDir: 'dist', // Make sure this is set to your desired output directory
     rollupOptions: {
       input: {
-        main: './src/main.tsx',  // Adjust according to your entry point
+        main: 'index.html', // Ensure your entry HTML file is correctly specified
       },
     },
   },
