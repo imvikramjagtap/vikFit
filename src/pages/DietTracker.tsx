@@ -15,6 +15,7 @@ import { RootState } from '../store/store'
 import { addCustomMeal, selectMeal, addCustomSelectedMeal, deleteMeal, addWeight, MealOption, MealTime } from '../store/dietSlice'
 import { DatePickerWithPresets } from '../components/ui/datePicker'
 import { format } from "date-fns"
+import { DatePickerWithRange } from '@/components/ui/rangeDatePicker'
 
 export default function EnhancedDietTracker() {
   const dispatch = useDispatch()
@@ -28,11 +29,16 @@ export default function EnhancedDietTracker() {
   const [currentWeight, setCurrentWeight] = useState<string>('')
   const [isCustomMealOpen, setIsCustomMealOpen] = useState(false)
   const [isAddToSelectedMeals, setIsAddToSelectedMeals] = useState(false)
+  const [dateRange, setDateRange] = useState(undefined);
   const { theme, setTheme } = useTheme()
 
   useEffect(() => {
-    updateGraphData()
-  }, [selectedMeals, weightData, graphPeriod, currentDay])
+    if (dateRange) {
+      updateGraphData(dateRange);
+    } else {
+      updateGraphData(null);
+    }
+  }, [selectedMeals, weightData, graphPeriod, currentDay, dateRange]);
 
   const handleMealSelection = (mealTime: MealTime, selection: MealOption) => {
     dispatch(selectMeal({ date: currentDay, mealTime, meal: selection }))
@@ -72,14 +78,20 @@ export default function EnhancedDietTracker() {
     )
   }
 
-  const updateGraphData = () => {
-    let endDate = new Date(currentDay)
-    let startDate = new Date(endDate)
+  const updateGraphData = (daterange: { from: string; to: string } | null) => {
+    let endDate = daterange?.to || new Date(currentDay);
+    let startDate = daterange?.from || new Date(endDate);
+    console.log(startDate, endDate, "start end");
 
-    if (graphPeriod === 'week') {
-      startDate.setDate(startDate.getDate() - 7)
-    } else if (graphPeriod === 'month') {
-      startDate.setDate(startDate.getDate() - 30)
+    if (!dateRange) {
+      console.log("called");
+      if (graphPeriod === "week") {
+        startDate.setDate(startDate.getDate() - 7);
+      } else if (graphPeriod === "month") {
+        startDate.setDate(startDate.getDate() - 30);
+      }
+    } else {
+      setGraphPeriod(null)
     }
 
     const data = []
@@ -260,7 +272,9 @@ export default function EnhancedDietTracker() {
                 type="number"
                 placeholder="Protein (g)"
                 value={newMeal.protein}
-                onChange={(e) => setNewMeal({ ...newMeal, protein: Number(e.target.value) })}
+                onChange={(e) =>
+                  setNewMeal({ ...newMeal, protein: Number(e.target.value) })
+                }
               />
               <div className="flex items-center space-x-2">
                 <input
@@ -310,8 +324,9 @@ export default function EnhancedDietTracker() {
         </div>
         <div className="mt-8 space-y-4">
           <h3 className="text-xl font-semibold">Nutrition and Weight Graphs</h3>
+          <DatePickerWithRange setDate={setDateRange} date={dateRange} />
           <div className="flex justify-center space-x-4">
-            <Select onValueChange={(value) => setGraphPeriod(value as 'day' | 'week' | 'month')} value={graphPeriod}>
+            <Select onValueChange={(value) => {setGraphPeriod(value as 'day' | 'week' | 'month'), setDateRange(undefined)}} value={graphPeriod}>
               <SelectTrigger>
                 <SelectValue placeholder="Select period" />
               </SelectTrigger>
